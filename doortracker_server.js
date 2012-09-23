@@ -149,6 +149,7 @@ app.get('/personwalked', function(req, res) {
     });
 
     fbres.on('end', function() {
+      console.log(req.session.access_token)
       console.log("HEY WE POSTED PROBABLY");
       console.log(output);
       res.send("okay!");
