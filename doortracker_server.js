@@ -132,10 +132,10 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
     host: 'graph.facebook.com',
     port: 443,
     method: 'POST',
-    path: '/me/doortracker:enter?room=http://samples.ogp.me/423342884391735' + '&access_token=' + req.session.access_token
+    path: '/me/doortracker:enter?room=http://thepaulbooth.com:3031/room/' + room_name + '&access_token=' + req.session.access_token
   };
   console.log("PATH:" + '/me/doortracker:enter?room=http://thepaulbooth.com:3031/room/' + room_name + '&access_token=' + req.session.access_token)
-  https.get(options, function(fbres) {
+  https.request(options, function(fbres) {
     // console.log('STATUS: ' + fbres.statusCode);
     // console.log('HEADERS: ' + JSON.stringify(fbres.headers));
     var output = '';
