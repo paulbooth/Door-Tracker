@@ -150,6 +150,7 @@ app.get('/personwalked', function(req, res) {
 
     fbres.on('end', function() {
       console.log("HEY WE POSTED PROBABLY");
+      console.log(output);
       res.send("okay!");
     });
   }).on('error', function(e) {
