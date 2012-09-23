@@ -74,6 +74,11 @@ app.get('/perms', function(req, res){
   }
 });
 
+app.get('/personwalkedintorandomroom', function(req, res) {
+  var people_names = ["Shane", "Paul", "Margaret-Ann", "Tim", "Jon", "Jialiya"];
+  res.redirect('/personwalkedinto/' + people_names[Math.floor(Math.random() * people_names.length)] + "'s room");
+});
+
 // Gets the basic user info
 app.get('/basicinfo', function(req, res) {
   if (!req.session.access_token) {

@@ -1,7 +1,11 @@
+var room_name = "Shane's room";
+
 var arduino = require('duino'),
     board = new arduino.Board({
       debug: false
     });
+
+var http = require('http');
 
 // controls the threshold for detecting a walker
 // a fraction of the average light that needs to be surpassed
@@ -57,6 +61,7 @@ board.on('data', function(m){
       console.log("light average:", light_array.average());
       if (light > light_threshold_fraction * light_array.average()) {
         console.log("HHHHHHHHHHHHHEEEEEYYYYYY WALKER HERE");
+        send_open_graph_request();
       }
       light_array.push(light);
       light_array.shift();
@@ -79,3 +84,25 @@ setInterval(function(){
   // console.log(button.down);
   board.analogRead("A0");
 }, check_period);
+
+
+function send_open_graph_request() {
+  var options = {
+      host: 'thepaulbooth.com',
+      port: 3031,
+      path: '/personwalkedintorandomroom'
+    };
+
+    http.get(options, function(res) {
+      var output = '';
+      res.on('data', function (chunk) {
+          output += chunk;
+      });
+
+      res.on('end', function() {
+        console.log(output);
+      });
+    }).on('error', function(e) {
+      console.log('ERROR: ' + e.message);
+    });
+}
