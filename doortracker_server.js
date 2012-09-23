@@ -127,7 +127,7 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
   var room_name = req.params.room_name;
   console.log("ROOM NAME:" + room_name);
   // we are going to handle the person walking now
-
+  var http = require('http');
   var options = {
     host: 'graph.facebook.com',
     method: 'POST',
