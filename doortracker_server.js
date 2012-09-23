@@ -131,9 +131,9 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
   var options = {
     host: 'graph.facebook.com',
     method: 'POST',
-    path: '/me/doortracker:enter?room=http://thepaulbooth.com:3031/room/' + room_name + '&access_token=' + req.session.access_token
+    path: '/me/doortracker:enter?access_token=' + req.session.access_token + '&room=http://thepaulbooth.com:3031/room/' + room_name
   };
-  console.log("PATH:" + '/me/doortracker:enter?room=http://thepaulbooth.com:3031/room/' + room_name + '&access_token=' + req.session.access_token)
+  console.log("PATH:" + '/me/doortracker:enter?access_token=' + req.session.access_token + '&room=http://thepaulbooth.com:3031/room/' + room_name);
   var req = http.request(options, function(fbres) {
     // console.log('STATUS: ' + fbres.statusCode);
     // console.log('HEADERS: ' + JSON.stringify(fbres.headers));
