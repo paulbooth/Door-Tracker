@@ -139,7 +139,7 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
     'Content-Length': body.length,
     'Content-Type': 'application/json',
     method: 'POST',
-    path: '/me/doortracker:enter?access_token=' + req.session.access_token + '&room=http://thepaulbooth.com:3031/room/' + room_name
+    path: '/me/doortracker:enter'
   };
 
   var request = http.request(options, function (response) {
