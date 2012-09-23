@@ -113,9 +113,27 @@ app.get('/doortracker', function(req, res) {
   console.log("user:")
   console.log(JSON.stringify(req.session.user, undefined, 2));
   console.log(req.session.access_token);
-  res.render('index.jade', locals);
+  if (req.session.personwalked) {
+    res.redirect('/personwalked');
+  } else {
+    res.render('index.jade', locals);
+  }
   //res.send("CHATTING IT UP, " + my_user.name + ", with: <ul><li>" + ONLINE.join('</li><li>') + '</li></ul>');
 });
+
+app.get('/personwalked', function(req, res) {
+  console.log("Hey someone walked!");
+  if (!req.session.access_token) {
+    console.log("NO ACCESS TOKEN AT PERSON WALKED.")
+    req.session.personwalked = true;
+    res.redirect('/'); // Start the auth flow
+    return;
+  }
+  // we are going to handle the person walking now
+  req.session.personwalked = false;
+  
+});
+
 
 // we got a button push
 app.get('/buttonpush', function(req, res) {
