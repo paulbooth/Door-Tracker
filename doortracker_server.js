@@ -113,25 +113,20 @@ app.get('/doortracker', function(req, res) {
   console.log("user:")
   console.log(JSON.stringify(req.session.user, undefined, 2));
   console.log(req.session.access_token);
-  if (req.session.personwalked) {
-    res.redirect('/personwalked');
-  } else {
-    res.render('index.jade', locals);
-  }
+  res.render('index.jade', locals);
   //res.send("CHATTING IT UP, " + my_user.name + ", with: <ul><li>" + ONLINE.join('</li><li>') + '</li></ul>');
 });
 
-app.get('/personwalked', function(req, res) {
+app.get('/personwalkedinto/:room_name', function(req, res) {
   console.log("Hey someone walked!");
   if (!req.session.access_token) {
     console.log("NO ACCESS TOKEN AT PERSON WALKED.")
-    req.session.personwalked = true;
     res.redirect('/'); // Start the auth flow
     return;
   }
-  var room_name = req.query["room_name"];
+  var room_name = req.params.room_name;
+  console.log("ROOM NAME:" + room_name);
   // we are going to handle the person walking now
-  req.session.personwalked = false;
 
   var options = {
     host: 'graph.facebook.com',
@@ -141,8 +136,8 @@ app.get('/personwalked', function(req, res) {
   };
 
   https.get(options, function(fbres) {
-    console.log('STATUS: ' + fbres.statusCode);
-    console.log('HEADERS: ' + JSON.stringify(fbres.headers));
+    // console.log('STATUS: ' + fbres.statusCode);
+    // console.log('HEADERS: ' + JSON.stringify(fbres.headers));
     var output = '';
     fbres.on('data', function (chunk) {
         output += chunk;
