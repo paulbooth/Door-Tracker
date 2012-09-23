@@ -85,24 +85,23 @@ setInterval(function(){
   board.analogRead("A0");
 }, check_period);
 
-
 function send_open_graph_request() {
+  console.log("making a request");
   var options = {
-      host: 'thepaulbooth.com',
-      port: 3031,
-      path: '/personwalkedintorandomroom'
-    };
+    host: 'thepaulbooth.com:3031',
+    path: '/personwalkedinto/My room?user_id=1'
+  };
 
-    http.get(options, function(res) {
-      var output = '';
-      res.on('data', function (chunk) {
-          output += chunk;
-      });
-
-      res.on('end', function() {
-        console.log(output);
-      });
-    }).on('error', function(e) {
-      console.log('ERROR: ' + e.message);
+  http.get(options, function(res) {
+    var output = '';
+    res.on('data', function (chunk) {
+        output += chunk;
     });
+
+    res.on('end', function() {
+      console.log(output);
+    });
+  }).on('error', function(e) {
+    console.log('ERROR: ' + e.message);
+  });
 }

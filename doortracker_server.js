@@ -5,6 +5,8 @@ var argv = process.argv;
 var https = require('https');
 var querystring = require('querystring');
 
+// stores the access_tokens
+var access_tokens = [];
 
 var hostUrl = 'http://thepaulbooth.com:3031';
 
@@ -74,11 +76,6 @@ app.get('/perms', function(req, res){
   }
 });
 
-app.get('/personwalkedintorandomroom', function(req, res) {
-  var people_names = ["Shane", "Paul", "Margaret-Ann", "Tim", "Jon", "Jialiya"];
-  res.redirect('/personwalkedinto/' + people_names[Math.floor(Math.random() * people_names.length)] + "'s room");
-});
-
 // Gets the basic user info
 app.get('/basicinfo', function(req, res) {
   if (!req.session.access_token) {
@@ -123,9 +120,11 @@ app.get('/doortracker', function(req, res) {
   //res.send("CHATTING IT UP, " + my_user.name + ", with: <ul><li>" + ONLINE.join('</li><li>') + '</li></ul>');
 });
 
+// when someone walks into a room, this posts to the FB timeline
 app.get('/personwalkedinto/:room_name', function(req, res) {
   console.log("Hey someone walked!");
-  if (!req.session.access_token) {
+  var user_id = req.query["user_id"];
+  if (!req.session.access_token && user_id == null) {
     console.log("NO ACCESS TOKEN AT PERSON WALKED.")
     res.redirect('/'); // Start the auth flow
     return;
@@ -166,97 +165,13 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
 });
 
 // url to get a specific room
+// each room is an open graph object page
 // /room?room_name=Suite400
 app.get('/room/:room_name', function(req, res) {
   var room_name = req.params.room_name;
   res.render('room.jade', {room_name: room_name});
 });
 
-// we got a button push
-app.get('/buttonpush', function(req, res) {
-  console.log('trying button  push')
-  if (!req.session.access_token) {
-    console.log("NO ACCESS TOKEN AT button down.")
-    req.session.tryingtopushbutton = true;
-    res.redirect('/'); // Start the auth flow
-    console.log("redirected away!");
-    return;
-  }
-  req.session.tryingtopushbutton = false;
-  var locals = {name: req.session.user.name, access_token: req.session.access_token}
-  console.log("user:")
-  console.log(JSON.stringify(req.session.user, undefined, 2));
-  console.log(req.session.access_token);
-  var options = {
-      host: 'graph.facebook.com',
-      port: 443,
-      method: 'POST',
-      path: '/me/thephantomphacebook:push?button=http://thepaulbooth.com:3000/objects/button.html&access_token=' + req.session.access_token
-    };
-  https.request(options, function(fbres) {
-    // console.log('CHATSTATUS: ' + fbres.statusCode);
-    //   console.log('HEADERS: ' + JSON.stringify(fbres.headers));
-
-      var output = '';
-      fbres.on('data', function (chunk) {
-          //console.log("CHUNK:" + chunk);
-          output += chunk;
-      });
-
-      fbres.on('end', function() {
-        console.log('posted:');
-        console.log(output);
-      });
-      fbres.on('err', function(err) {
-        console.log('error');
-        console.log(err);
-      });
-  });
-  //res.send("CHATTING IT UP, " + my_user.name + ", with: <ul><li>" + ONLINE.join('</li><li>') + '</li></ul>');
-});
-
-// this breaks the server - need an arduino attached to server :(
-// app.get('/connect', function(req, res) {
-
-//   var LEDlist = [];
-
-//   var buttonDown = function(){
-//     LEDlist[0].setOn();
-//     console.log("On!");
-//   }
-
-//   var buttonUp = function(){
-//     LEDlist[0].setOff();
-//   }
-
-//   requirejs(['public/scripts/libs/Noduino', 'public/scripts/libs/Noduino.Serial', 'public/scripts/libs/Logger'], function (NoduinoObj, NoduinoConnector, Logger) {
-//     var Noduino = new NoduinoObj({'debug': true, host: 'http://thepaulbooth.com:300'}, NoduinoConnector, Logger);
-//     Noduino.connect(function(err, board) {
-//       if (err) { return console.log(err); }
-
-//       board.withLED({pin: 13}, function(err, LED) { LEDlist[0] = LED;});
-//       board.withAnalogInput({pin:  'A0'}, function(err, AnalogInput) { 
-//         AnalogInput.on('change', function(a) {
-//           console.log(a);
-//           if (a.value == 1023) {
-//             //HACK: This is expecting a potentiometer changing signal between 0 and 1023
-//             // Button just is an analog input with/without 5V for on/off
-//             buttonDown();
-//           } else {
-//             buttonUp();
-//           }
-//         });
-//       });
-//     });
-//   });
-
-// });
-
-
-
 console.log("starting server");
 app.listen(3031);
 console.log("that was cool");
-
-
-
