@@ -1,7 +1,3 @@
-var apiKey = '423298101062880';
-var secretKey = '3ea916ceaa6675538845a6ad37268692';
-
-
 var arduino = require('duino'),
     board = new arduino.Board({
       debug: false
