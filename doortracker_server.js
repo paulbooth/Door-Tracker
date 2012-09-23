@@ -134,7 +134,7 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
     method: 'POST',
     path: '/me/doortracker:enter?room=http://thepaulbooth.com:3031/room/' + room_name + '&access_token=' + req.session.access_token
   };
-
+  console.log("PATH:" + '/me/doortracker:enter?room=http://thepaulbooth.com:3031/room/' + room_name + '&access_token=' + req.session.access_token)
   https.get(options, function(fbres) {
     // console.log('STATUS: ' + fbres.statusCode);
     // console.log('HEADERS: ' + JSON.stringify(fbres.headers));
@@ -147,7 +147,7 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
       console.log(req.session.access_token)
       console.log("HEY WE POSTED PROBABLY");
       console.log(output);
-      res.send("okay!");
+      res.send(output);
     });
   }).on('error', function(e) {
     console.log('person walking ERROR: ' + e.message);
