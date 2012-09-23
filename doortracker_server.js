@@ -137,8 +137,7 @@ app.get('/personwalked', function(req, res) {
     host: 'graph.facebook.com',
     port: 443,
     method: 'POST',
-    path: '/me/doortracker:enter
-         ?room=http://thepaulbooth.com:3031/room?room_name=' + room_name + '&access_token=' + req.session.access_token
+    path: '/me/doortracker:enter?room=http://thepaulbooth.com:3031/room?room_name=' + room_name + '&access_token=' + req.session.access_token
   };
 
   https.get(options, function(fbres) {
