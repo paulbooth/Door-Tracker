@@ -141,8 +141,8 @@ app.get('/personwalked', function(req, res) {
   };
 
   https.get(options, function(fbres) {
-    // console.log('STATUS: ' + fbres.statusCode);
-    // console.log('HEADERS: ' + JSON.stringify(fbres.headers));
+    console.log('STATUS: ' + fbres.statusCode);
+    console.log('HEADERS: ' + JSON.stringify(fbres.headers));
     var output = '';
     fbres.on('data', function (chunk) {
         output += chunk;
