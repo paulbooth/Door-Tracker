@@ -144,7 +144,6 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
     });
 
     fbres.on('end', function() {
-      console.log(req.session.access_token)
       console.log("HEY WE POSTED PROBABLY");
       console.log(output);
     });
