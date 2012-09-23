@@ -5,7 +5,7 @@ var argv = process.argv;
 var https = require('https');
 
 
-var hostUrl = 'http://localhost.com:3031';
+var hostUrl = 'http://thepaulbooth.com:3031';
 
 var express = require('express'),
     app = express();
