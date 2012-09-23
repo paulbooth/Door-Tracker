@@ -147,6 +147,7 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
     });
   });
   request.end();
+  console.log("PATH: " + '/me/doortracker:enter?access_token=' + req.session.access_token + '&room=http://thepaulbooth.com:3031/room/' + room_name)
   //console.log("PATH:" + '/me/doortracker:enter?access_token=' + req.session.access_token + '&room=http://thepaulbooth.com:3031/room/' + room_name);
   
 
