@@ -128,21 +128,15 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
   console.log("ROOM NAME:" + room_name);
   // we are going to handle the person walking now
 
-  var body = {
-    'access_token': req.session.access_token,
-    'room': "http://thepaulbooth.com:3031/room/" + room_name       
-  };
-
-  var http = require('http');
   var options = {
     host: 'graph.facebook.com',
-    'Content-Length': body.length,
-    'Content-Type': 'application/json',
+    'Content-Length': 0,
+    'Content-Type': 'application/x-www-form-urlencoded',
     method: 'POST',
-    path: '/me/doortracker:enter'
+    path: '/me/doortracker:enter?access_token=' + req.session.access_token + '&room=http://thepaulbooth.com:3031/room/' + room_name
   };
 
-  var request = http.request(options, function (response) {
+  var request = https.request(options, function (response) {
     var str = '';
     response.on('data', function (chunk) {
       str += chunk;
@@ -152,7 +146,6 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
       console.log(str);
     });
   });
-  request.write(JSON.stringify(body));
   request.end();
   //console.log("PATH:" + '/me/doortracker:enter?access_token=' + req.session.access_token + '&room=http://thepaulbooth.com:3031/room/' + room_name);
   
