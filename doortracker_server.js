@@ -138,8 +138,8 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
     host: 'graph.facebook.com',
     headers: {
       'Content-Length': post_data.length,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    }
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
     method: 'POST',
     path: '/me/doortracker:enter?access_token=' + req.session.access_token
   };
