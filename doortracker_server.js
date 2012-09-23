@@ -152,33 +152,12 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
 
     response.on('end', function () {
       console.log(str);
+      res.send(str);
     });
   });
   request.write(post_data);
   request.end();
-  console.log("PATH: " + '/me/doortracker:enter?access_token=' + req.session.access_token + '&room=http://thepaulbooth.com:3031/room/' + room_name)
-  //console.log("PATH:" + '/me/doortracker:enter?access_token=' + req.session.access_token + '&room=http://thepaulbooth.com:3031/room/' + room_name);
   
-
-
-  // var req = http.request(options, function(fbres) {
-  //   // console.log('STATUS: ' + fbres.statusCode);
-  //   // console.log('HEADERS: ' + JSON.stringify(fbres.headers));
-  //   var output = '';
-  //   fbres.on('data', function (chunk) {
-  //       output += chunk;
-  //   });
-
-  //   fbres.on('end', function() {
-  //     console.log("HEY WE POSTED PROBABLY");
-  //     console.log(output);
-  //   });
-  // });
-
-  // req.on('error', function(e) {
-  //   console.log('person walking ERROR: ' + e.message);
-  // }); 
-  // req.end();
 });
 
 // url to get a specific room
