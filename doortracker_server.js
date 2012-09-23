@@ -131,9 +131,15 @@ app.get('/personwalked', function(req, res) {
   }
   // we are going to handle the person walking now
   req.session.personwalked = false;
-  
+
 });
 
+// url to get a specific room
+// /room?room_name=Suite400
+app.get('/room', function(req, res) {
+  var room_name = req.query["room_name"];
+  res.render('room.jade', {room_name: room_name});
+});
 
 // we got a button push
 app.get('/buttonpush', function(req, res) {

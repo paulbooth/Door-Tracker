@@ -1,0 +1,13 @@
+!!! 5
+html(lang='en')
+  head(prefix='og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# doortracker: http://ogp.me/ns/fb/doortracker#')
+    meta(property='fb:app_id', content='423298101062880')
+      meta(property='og:type', content='doortracker:room')
+      meta(property='og:url', content='http://thepaulbooth.com:3031/room?#{room_name}')
+      meta(property='og:title', content='Sample Room')
+      meta(property='og:image', content='https://s-static.ak.fbcdn.net/images/devsite/attachment_blank.png')
+    title= room_name
+    script(src='jquery.js')
+
+  body
+	  h1 The coolest place to be is #{room_name}!
