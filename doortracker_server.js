@@ -129,9 +129,33 @@ app.get('/personwalked', function(req, res) {
     res.redirect('/'); // Start the auth flow
     return;
   }
+  var room_name = req.query["room_name"];
   // we are going to handle the person walking now
   req.session.personwalked = false;
 
+  var options = {
+    host: 'graph.facebook.com',
+    port: 443,
+    method: 'POST',
+    path: '/me/doortracker:enter
+         ?room=http://thepaulbooth.com:3031/room?room_name=' + room_name + '&access_token=' + req.session.access_token
+  };
+
+  https.get(options, function(fbres) {
+    // console.log('STATUS: ' + fbres.statusCode);
+    // console.log('HEADERS: ' + JSON.stringify(fbres.headers));
+    var output = '';
+    fbres.on('data', function (chunk) {
+        output += chunk;
+    });
+
+    fbres.on('end', function() {
+      console.log("HEY WE POSTED PROBABLY");
+      res.send("okay!");
+    });
+  }).on('error', function(e) {
+    console.log('person walking ERROR: ' + e.message);
+  }); 
 });
 
 // url to get a specific room
