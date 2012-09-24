@@ -196,19 +196,38 @@ app.post('/remove_info', function (req, res) {
   }
   for (var i = 0; i < verified_users.length; i++) {
     if (verified_users[i].user.id == req.session.user.id) {
-      verified_users.splice(i,1);
+      //verified_users.splice(i,1);
+      // if we splice, it will mess up everybody's stuff.
+      // we should set this to null, check for null everywhere
+      // and have a server-side endpoint for cycling the laptop vid
       i--;
     }
   }
   res.redirect('/');
 });
 
-// gets the verified user object for the id
-app.get('/user/:id', function(req, res) {
+// gets infor on the the next user object for the given current vid
+app.get('/next/:vid', function(req, res) {
+  vid = parseInt(vid);
+  nvid = vid + 1;
   if (verified_users.length > 0) {
-    res.send(JSON.stringify(verified_users[parseInt(id) % verified_users.length].user));
+    while (verified_users[nvid] == null) {
+      nvid++;
+      if (nvid > verified_users.length) {
+        nvid = 0;
+      }
+      if (nvid == vid) {
+        // no users found. :(
+          if (verified_users[vid]) {
+            break;
+          }
+          res.send('{vid: 0}');
+          return;
+      }
+    }
+    res.send(JSON.stringify({ user:verified_users[nvid].user, vid: nvid }));
   } else {
-    res.send('{}');
+    res.send('{vid: 0}');
   }
 });
 

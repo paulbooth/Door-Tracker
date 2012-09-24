@@ -7,6 +7,9 @@ var arduino = require('duino'),
 
 var http = require('http');
 
+// stores the verified id for the current user
+var current_vid = 0;
+
 // controls the threshold for detecting a walker
 // a fraction of the average light that needs to be surpassed
 var light_threshold_fraction = 1.1;
@@ -21,12 +24,6 @@ var size_light_array = 10;
 // Array to hold the last couple iterations of light values
 // so we know if there is a person walking under the light sensor
 var light_array = [];
-
-function set_up_light_array(light_value) {
-  for (var i = 0; i < light_array.length; i++) {
-    light_array[i] = light_value;
-  }
-}
 
 // Assumes array of numbers
 Array.prototype.sum = function() {
@@ -44,13 +41,24 @@ Array.prototype.average = function() {
 // });
 
 // led.blink();
-board.pinMode("A0", 'in');
+
+
 var button = new arduino.Button({
   board: board,
   pin: "12"
 });
 
+button.on('down', function(){
+  increment_vid();
+  console.log('BOOM');
+});
 
+button.on('up', function(){
+
+});
+
+// handle the light sensor
+board.pinMode("A0", 'in');
 board.on('data', function(m){
   var splitdata = m.split(':');
   if (splitdata[0] == "A0") {
@@ -70,26 +78,15 @@ board.on('data', function(m){
   }
 });
 
-button.on('down', function(){
-  
-  console.log('BOOM');
-});
-
-button.on('up', function(){
-  
-  console.log('DA');
-});
-
 setInterval(function(){
   // console.log(button.down);
   board.analogRead("A0");
 }, check_period);
 
-function send_open_graph_request() {
-  console.log("making a request");
+function increment_vid() {
   var options = {
     host: 'thepaulbooth.com:3031',
-    path: '/personwalkedinto/My room?user_id=1'
+    path: '/next/' + current_vid
   };
 
   http.get(options, function(res) {
@@ -99,6 +96,35 @@ function send_open_graph_request() {
     });
 
     res.on('end', function() {
+      var server_data = JSON.parse(output);
+      var user = server_data.user;
+      var vid = server_data.vid;
+      current_vid = vid;
+      if (user && user.name) {
+        console.log("Currently logged in as " + user.name);
+      }
+    });
+  }).on('error', function(e) {
+    console.log('ERROR: ' + e.message);
+  });
+}
+
+// sends an open graph request to the current vid
+function send_open_graph_request() {
+  console.log("making a request");
+  var options = {
+    host: 'thepaulbooth.com:3031',
+    path: '/personwalkedinto/' + room_name + '?user_id=' + current_vid
+  };
+
+  http.get(options, function(res) {
+    var output = '';
+    res.on('data', function (chunk) {
+        output += chunk;
+    });
+
+    res.on('end', function() {
+      console.log("output from OG request:");
       console.log(output);
     });
   }).on('error', function(e) {
