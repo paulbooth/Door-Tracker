@@ -1,4 +1,5 @@
-var room_name = "Paul's room";
+var room_names = ["Paul's Room", "Super Awesome Lab"];
+var room_images = ['http://www.classcarpetny.com/wp-content/uploads/2012/03/room.jpg', 'https://pbs.twimg.com/media/A3iPJiOCUAA195E.jpg:large']
 
 var arduino = require('duino'),
     board = new arduino.Board({
@@ -8,7 +9,7 @@ var arduino = require('duino'),
 var http = require('http');
 
 // controls the ports for the light sensors
-var light_ports = ["A0", "A1"];
+var light_ports = ["A0", "A1", "A2", "A3"];
 
 // stores the verified id for the current user
 var current_vid = 0;
@@ -19,13 +20,13 @@ var light_threshold_fraction = 1.1;
 
 // controls the frequency of checking for input
 // a time in milliseconds to check
-var check_period = 500;
+var check_period = 100;
 
 // controls the time to count as going in one direction through door
 var DOOR_THRESHOLD_TIME = 1000;
 
 // Stores the number of samples to keep track of
-var size_light_array = 10;
+var size_light_array = 50;
 
 // Stores the times since last triggered
 var light_port_times = Array(light_ports.length);
@@ -133,18 +134,24 @@ function increment_vid() {
 // updates the time since the light was interrupted, maybe causing an OG request
 function update_time_walked(i) {
   var d = new Date();
+  var old_time = light_port_times[i];
   light_port_times[i] = d.getTime();
   // even versus odd - going in versus out.
+
+  //filter out repeat stamps
+  if (light_port_times[i] - old_time < 2 * check_period) {
+    return;
+  }
   if (i % 2 == 0) {
     console.log("Time since partner:" + (light_port_times[i] - light_port_times[i+1]))
     if (light_port_times[i+1] && light_port_times[i] - light_port_times[i+1] < DOOR_THRESHOLD_TIME) {
       console.log("ENTERING");
-      send_open_graph_request(true); // we must be going into the room
+      send_open_graph_request(true, i/2); // we must be going into the room
     }
   } else {
     console.log("Time since partner:" + (light_port_times[i] - light_port_times[i-1]))
     if (light_port_times[i-1] && light_port_times[i] - light_port_times[i-1] < DOOR_THRESHOLD_TIME) {
-      send_open_graph_request(false); // we must be leaving the room
+      send_open_graph_request(false, (i-1)/2); // we must be leaving the room
       console.log("LEAVING");
     }
   }
@@ -152,12 +159,12 @@ function update_time_walked(i) {
 
 // sends an open graph request to the current vid
 // entering_room is boolean for entering or leaving a room
-function send_open_graph_request(entering_room) {
+function send_open_graph_request(entering_room, room_num) {
   console.log("making a request with vid:" + current_vid);
   var options = {
     host: 'thepaulbooth.com',
     port: 3031,
-    path: '/personwalkedinto/' + encodeURIComponent(room_name) + '?user_id=' + current_vid + '&entering_room=' + entering_room
+    path: '/personwalkedinto/' + encodeURIComponent(room_names[room_num]) + '?user_id=' + current_vid + '&entering_room=' + entering_room + '&room_image=' + encodeURIComponent(room_images[room_num])
   };
 
   http.get(options, function(res) {

@@ -125,6 +125,7 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
   console.log("Hey someone walked!");
   var user_id = req.query["user_id"];
   var entering_room = req.query["entering_room"];
+  var room_image = req.query["room_image"] || 'http://www.classcarpetny.com/wp-content/uploads/2012/03/room.jpg'
   console.log("entering room:" + entering_room);
   console.log(typeof(entering_room));
   if (!req.session.access_token && (user_id == null || verified_users.length == 0)) {
@@ -138,7 +139,7 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
   // we are going to handle the person walking now
 
   var post_data = querystring.stringify({
-    room: "http://thepaulbooth.com:3031/room/" + room_name,
+    room: "http://thepaulbooth.com:3031/room/" + room_name + '?room_image='+room_image,
     access_token: access_token
   });
 
@@ -245,7 +246,8 @@ app.get('/numverified', function(req, res) {
 // /room?room_name=Suite400
 app.get('/room/:room_name', function(req, res) {
   var room_name = req.params.room_name;
-  res.render('room.jade', {room_name: room_name});
+  var room_image = req.query["room_image"] || 'http://www.classcarpetny.com/wp-content/uploads/2012/03/room.jpg';
+  res.render('room.jade', {room_name: room_name, room_image: room_image});
 });
 
 console.log("starting server");
