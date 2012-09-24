@@ -5,8 +5,8 @@ var argv = process.argv;
 var https = require('https');
 var querystring = require('querystring');
 
-// stores the access_tokens
-var access_tokens = [];
+// stores the verified_users
+var verified_users = [];
 
 var hostUrl = 'http://thepaulbooth.com:3031';
 
@@ -112,7 +112,7 @@ app.get('/doortracker', function(req, res) {
     res.redirect('/'); // Start the auth flow
     return;
   }
-  var locals = {name: req.session.user.name, access_token: req.session.access_token}
+  var locals = {name: req.session.user.name, verified: check_verified(req.session.user.id)}
   console.log("user:")
   console.log(JSON.stringify(req.session.user, undefined, 2));
   console.log(req.session.access_token);
@@ -124,18 +124,19 @@ app.get('/doortracker', function(req, res) {
 app.get('/personwalkedinto/:room_name', function(req, res) {
   console.log("Hey someone walked!");
   var user_id = req.query["user_id"];
-  if (!req.session.access_token && user_id == null) {
+  if (!req.session.access_token && (user_id == null || verified_users.length == 0)) {
     console.log("NO ACCESS TOKEN AT PERSON WALKED.")
     res.redirect('/'); // Start the auth flow
     return;
   }
+  var access_token = req.session.access_token || verified_users[user_id % verified_users.length].access_token;
   var room_name = req.params.room_name;
   console.log("ROOM NAME:" + room_name);
   // we are going to handle the person walking now
 
   var post_data = querystring.stringify({
     room: "http://thepaulbooth.com:3031/room/" + room_name,
-    access_token: req.session.access_token
+    access_token: access_token
   });
 
   var options = {
@@ -145,7 +146,7 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     method: 'POST',
-    path: '/me/doortracker:enter?access_token=' + req.session.access_token
+    path: '/me/doortracker:enter?access_token=' + access_token
   };
 
   var request = https.request(options, function (response) {
@@ -160,9 +161,43 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
     });
   });
   request.write(post_data);
-  request.end();
-  
+  request.end();  
 });
+
+// checks to see if a fbid is stored already
+function check_verified(fbid) {
+  for (var i = 0; i < verified_users.length; i++) {
+    if (verified_users[i].user.id == fbid) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// stores the info of the current person as a verified user
+app.post('/store_info', function (req, res) {
+  if (!req.session.access_token) {
+    console.log("NO ACCESS TOKEN AT store_info.")
+    res.redirect('/'); // Start the auth flow
+    return;
+  }
+  verified_users.push({user: req.session.user,  access_token:req.session.access_token});
+  res.redirect('/');
+});
+
+// gets the verified user object for the id
+app.get('/user/:id') {
+  if (verified_users.length > 0) {
+    res.send(JSON.stringify(verified_users[parseInt(id) % verified_users.length].user));
+  } else {
+    res.send('{}');
+  }
+}
+
+// gets the number of verified users
+app.get('/numverified') {
+  res.send(JSON.stringify(verified_users.length));
+}
 
 // url to get a specific room
 // each room is an open graph object page
