@@ -186,6 +186,23 @@ app.post('/store_info', function (req, res) {
   res.redirect('/');
 });
 
+// removes the info of the current person as a verified user
+app.post('/remove_info', function (req, res) {
+  console.log("Removing INFO:" + req.session.user.name);
+  if (!req.session.access_token) {
+    console.log("NO ACCESS TOKEN AT store_info.")
+    res.redirect('/'); // Start the auth flow
+    return;
+  }
+  for (var i = 0; i < verified_users.length; i++) {
+    if (verified_users[i].user.id == req.session.user.id) {
+      delete verified_users[i];
+      i--;
+    }
+  }
+  res.redirect('/');
+});
+
 // gets the verified user object for the id
 app.get('/user/:id', function(req, res) {
   if (verified_users.length > 0) {
