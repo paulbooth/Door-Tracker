@@ -196,10 +196,7 @@ app.post('/remove_info', function (req, res) {
   }
   for (var i = 0; i < verified_users.length; i++) {
     if (verified_users[i].user.id == req.session.user.id) {
-      delete verified_users[i];
-      console.log(verified_users);
-      console.log(verified_users.length);
-      console.log(i);
+      verified_users.splice(i,1);
       i--;
     }
   }
