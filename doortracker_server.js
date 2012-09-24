@@ -186,18 +186,18 @@ app.post('/store_info', function (req, res) {
 });
 
 // gets the verified user object for the id
-app.get('/user/:id') {
+app.get('/user/:id', function(req, res) {
   if (verified_users.length > 0) {
     res.send(JSON.stringify(verified_users[parseInt(id) % verified_users.length].user));
   } else {
     res.send('{}');
   }
-}
+});
 
 // gets the number of verified users
-app.get('/numverified') {
+app.get('/numverified', function(req, res) {
   res.send(JSON.stringify(verified_users.length));
-}
+});
 
 // url to get a specific room
 // each room is an open graph object page
