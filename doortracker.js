@@ -111,9 +111,10 @@ function increment_vid() {
 
 // sends an open graph request to the current vid
 function send_open_graph_request() {
-  console.log("making a request");
+  console.log("making a request with vid:" + current_vid);
   var options = {
-    host: 'thepaulbooth.com:3031',
+    host: 'thepaulbooth.com',
+    port: 3031,
     path: '/personwalkedinto/' + room_name + '?user_id=' + current_vid
   };
 
