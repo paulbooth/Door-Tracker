@@ -8,9 +8,9 @@ html(lang='en')
   body
     h1 Get ready to track some doors, #{name}!
     h2 #{verified}
-    - if (verified)
+    - if (!verified)
       form(method="post", action="store_info")
         input(type="submit", value="STORE THESE CREDZ")
     - else
       form(method="post", action="remove_info")
-      input(type="submit", value="REMOVE THESE CREDZ")
+        input(type="submit", value="REMOVE THESE CREDZ")
