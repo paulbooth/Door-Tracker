@@ -115,7 +115,7 @@ function send_open_graph_request() {
   var options = {
     host: 'thepaulbooth.com',
     port: 3031,
-    path: '/personwalkedinto/' + room_name + '?user_id=' + current_vid
+    path: '/personwalkedinto/' + encodeURIComponent(room_name) + '?user_id=' + current_vid
   };
 
   http.get(options, function(res) {
@@ -130,5 +130,6 @@ function send_open_graph_request() {
     });
   }).on('error', function(e) {
     console.log('ERROR: ' + e.message);
+    console.log(e);
   });
 }
