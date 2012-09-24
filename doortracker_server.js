@@ -124,6 +124,9 @@ app.get('/doortracker', function(req, res) {
 app.get('/personwalkedinto/:room_name', function(req, res) {
   console.log("Hey someone walked!");
   var user_id = req.query["user_id"];
+  var entering_room = req.query["entering_room"];
+  console.log("entering room:" + entering_room);
+  console.log(typeof(entering_room));
   if (!req.session.access_token && (user_id == null || verified_users.length == 0)) {
     console.log("NO ACCESS TOKEN AT PERSON WALKED.")
     res.redirect('/'); // Start the auth flow
@@ -139,6 +142,7 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
     access_token: access_token
   });
 
+  var action_type = (entering_room == 'false') ? 'leave' : 'enter';
   var options = {
     host: 'graph.facebook.com',
     headers: {
@@ -146,7 +150,7 @@ app.get('/personwalkedinto/:room_name', function(req, res) {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     method: 'POST',
-    path: '/me/doortracker:enter?access_token=' + access_token
+    path: '/me/doortracker:' + action_type + '?access_token=' + access_token
   };
 
   var request = https.request(options, function (response) {
