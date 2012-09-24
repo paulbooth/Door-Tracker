@@ -176,6 +176,7 @@ function check_verified(fbid) {
 
 // stores the info of the current person as a verified user
 app.post('/store_info', function (req, res) {
+  console.log("STORING INFO:" + req.session.user.name);
   if (!req.session.access_token) {
     console.log("NO ACCESS TOKEN AT store_info.")
     res.redirect('/'); // Start the auth flow
