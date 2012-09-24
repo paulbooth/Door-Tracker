@@ -198,6 +198,7 @@ app.post('/remove_info', function (req, res) {
     if (verified_users[i].user.id == req.session.user.id) {
       delete verified_users[i];
       console.log(verified_users);
+      console.log(verified_users.length);
       console.log(i);
       i--;
     }
