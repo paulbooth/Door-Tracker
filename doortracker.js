@@ -1,5 +1,5 @@
-var room_names = ["Paul's Room", "Super Awesome Lab"];
-var room_images = ['http://www.classcarpetny.com/wp-content/uploads/2012/03/room.jpg', 'https://pbs.twimg.com/media/A3iPJiOCUAA195E.jpg:large']
+var room_names = ["Paul's Room", "Suite Pea"];
+var room_images = ['http://www.classcarpetny.com/wp-content/uploads/2012/03/room.jpg', 'https://pbs.twimg.com/media/A3qWCOUCEAI--yx.jpg:large'];//'https://pbs.twimg.com/media/A3iPJiOCUAA195E.jpg:large']
 
 var arduino = require('duino'),
     board = new arduino.Board({
@@ -55,6 +55,39 @@ Array.prototype.average = function() {
 // });
 
 // led.blink();
+
+
+// set up variables to execute say command
+
+var childProcess = require('child_process');
+
+function announce_person(room_name, entering_room) {
+  var thing_to_say = ""; 
+  if (entering_room) {
+    thing_to_say = "Welcome to " + room_name;
+  } else {
+    thing_to_say = "Come back to " + room_name + " soon";
+  }
+  var say = childProcess.exec('echo "' + room_name + '" | espeak', function (error, stdout, stderr) {
+   // if (error) {
+   //   console.log(error.stack);
+   //   console.log('Error code: '+error.code);
+   //   console.log('Signal received: '+error.signal);
+   // }
+   // console.log('Child Process STDOUT: '+stdout);
+   // console.log('Child Process STDERR: '+stderr);
+  });
+}
+
+ // say.on('exit', function (code) {
+ //   console.log('Child process exited with exit code '+code);
+ // });
+
+
+
+
+
+
 
 
 var button = new arduino.Button({
@@ -166,7 +199,7 @@ function send_open_graph_request(entering_room, room_num) {
     port: 3031,
     path: '/personwalkedinto/' + encodeURIComponent(room_names[room_num]) + '?user_id=' + current_vid + '&entering_room=' + entering_room + '&room_image=' + encodeURIComponent(room_images[room_num])
   };
-
+  announce_person(room_names[room_num], entering_room);
   http.get(options, function(res) {
     var output = '';
     res.on('data', function (chunk) {
