@@ -16,7 +16,7 @@ var current_vid = 0;
 
 // controls the threshold for detecting a walker
 // a fraction of the average light that needs to be surpassed
-var light_threshold_fraction = 1.1;
+var light_threshold_fraction = 1.04;
 
 // controls the frequency of checking for input
 // a time in milliseconds to check
@@ -68,7 +68,8 @@ function announce_person(room_name, entering_room) {
   } else {
     thing_to_say = "Come back to " + room_name + " soon";
   }
-  var say = childProcess.exec('echo "' + room_name + '" | espeak', function (error, stdout, stderr) {
+  console.log("saying:" + thing_to_say);
+  var say = childProcess.exec('echo "' + thing_to_say + '" | espeak', function (error, stdout, stderr) {
    // if (error) {
    //   console.log(error.stack);
    //   console.log('Error code: '+error.code);
@@ -131,12 +132,31 @@ board.on('data', function(m){
   }
 });
 
+// var cyclic_analogRead_counter = 0;
+// function cyclic_analogRead() {
+//   board.analogRead(light_ports[cyclic_analogRead_counter]);
+//   //console.log(cyclic_analogRead_counter);
+//   cyclic_analogRead_counter++;
+//   if (cyclic_analogRead_counter > light_ports.length) {
+//     cyclic_analogRead_counter = 0;
+//   }
+// }
+
+// for (var i = 0; i < light_ports.length; i++) {
+//   setTimeout(function(){
+//     setInterval(cyclic_analogRead, check_period);
+//   }, check_period * i / light_ports.length);
+// }
 setInterval(function(){
-  // console.log(button.down);
   for (var i =0; i < light_ports.length; i++) {
     board.analogRead(light_ports[i]);
+
   }
 }, check_period);
+
+setTimeout(function(){
+  console.log("Okay, should be calibrated now.")
+}, check_period * size_light_array);
 
 function increment_vid() {
   var options = {
@@ -180,12 +200,16 @@ function update_time_walked(i) {
     if (light_port_times[i+1] && light_port_times[i] - light_port_times[i+1] < DOOR_THRESHOLD_TIME) {
       console.log("ENTERING");
       send_open_graph_request(true, i/2); // we must be going into the room
+      light_port_times[i] = light_port_times[i] + 1000; // reset the timer
+      light_port_times[i+1] = light_port_times[i] + 1000;
     }
   } else {
     console.log("Time since partner:" + (light_port_times[i] - light_port_times[i-1]))
     if (light_port_times[i-1] && light_port_times[i] - light_port_times[i-1] < DOOR_THRESHOLD_TIME) {
       send_open_graph_request(false, (i-1)/2); // we must be leaving the room
       console.log("LEAVING");
+      light_port_times[i] = light_port_times[i] + 1000;
+      light_port_times[i-1] = light_port_times[i] + 1000;
     }
   }
 }
