@@ -213,7 +213,7 @@ app.post('/remove_info', function (req, res) {
 
 // gets infor on the the next user object for the given current vid
 app.get('/next/:vid', function(req, res) {
-  vid = parseInt(params.vid);
+  vid = parseInt(req.params.vid);
   nvid = vid + 1;
   if (verified_users.length > 0) {
     while (verified_users[nvid] == null) {
