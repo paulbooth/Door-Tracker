@@ -1,4 +1,4 @@
-var room_names = ["Paul's Room", "Suite Pea"];
+var room_names = ["Paul's Room", "Lounging Area"];
 var room_images = ['http://www.classcarpetny.com/wp-content/uploads/2012/03/room.jpg', 'https://pbs.twimg.com/media/A3qWCOUCEAI--yx.jpg:large'];//'https://pbs.twimg.com/media/A3iPJiOCUAA195E.jpg:large']
 
 var arduino = require('duino'),
@@ -13,6 +13,9 @@ var light_ports = ["A0", "A1", "A2", "A3"];
 
 // stores the verified id for the current user
 var current_vid = 0;
+
+// stores the verified user currently logged in
+var current_user = null;
 
 // controls the threshold for detecting a walker
 // a fraction of the average light that needs to be surpassed
@@ -172,11 +175,10 @@ function increment_vid() {
 
     res.on('end', function() {
       var server_data = JSON.parse(output);
-      var user = server_data.user;
-      var vid = server_data.vid;
-      current_vid = vid;
+      current_user = server_data.user;
+      current_vid = server_data.vid;
       if (user && user.name) {
-        console.log("Currently logged in as " + user.name);
+        console.log("Currently logged in as " + current_user.name);
       }
     });
   }).on('error', function(e) {
@@ -200,16 +202,16 @@ function update_time_walked(i) {
     if (light_port_times[i+1] && light_port_times[i] - light_port_times[i+1] < DOOR_THRESHOLD_TIME) {
       console.log("ENTERING");
       send_open_graph_request(true, i/2); // we must be going into the room
-      light_port_times[i] = light_port_times[i] + 1000; // reset the timer
-      light_port_times[i+1] = light_port_times[i] + 1000;
+      // light_port_times[i] = light_port_times[i] + 1000; // reset the timer
+      // light_port_times[i+1] = light_port_times[i] + 1000;
     }
   } else {
     console.log("Time since partner:" + (light_port_times[i] - light_port_times[i-1]))
     if (light_port_times[i-1] && light_port_times[i] - light_port_times[i-1] < DOOR_THRESHOLD_TIME) {
       send_open_graph_request(false, (i-1)/2); // we must be leaving the room
       console.log("LEAVING");
-      light_port_times[i] = light_port_times[i] + 1000;
-      light_port_times[i-1] = light_port_times[i] + 1000;
+      // light_port_times[i] = light_port_times[i] + 1000;
+      // light_port_times[i-1] = light_port_times[i] + 1000;
     }
   }
 }
