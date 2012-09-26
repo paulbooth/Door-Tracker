@@ -223,11 +223,11 @@ app.get('/next/:vid', function(req, res) {
       }
       if (nvid == vid) {
         // no users found. :(
-          if (verified_users[vid]) {
-            break;
-          }
-          res.send('{vid: 0}');
-          return;
+        if (verified_users[vid]) {
+          break;
+        }
+        res.send('{vid: 0}');
+        return;
       }
     }
     res.send(JSON.stringify({ user:verified_users[nvid].user, vid: nvid }));

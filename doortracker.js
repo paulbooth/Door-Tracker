@@ -12,7 +12,7 @@ var http = require('http');
 var light_ports = ["A0", "A1", "A2", "A3"];
 
 // stores the verified id for the current user
-var current_vid = 0;
+var current_vid = -1;
 
 // stores the verified user currently logged in
 var current_user = null;
@@ -61,15 +61,22 @@ Array.prototype.average = function() {
 
 
 // set up variables to execute say command
+function get_entering_text(room_name) {
+
+}
+
+function get_leaving_text(room_name) {
+
+}
 
 var childProcess = require('child_process');
 
 function announce_person(room_name, entering_room) {
   var thing_to_say = ""; 
   if (entering_room) {
-    thing_to_say = "Welcome to " + room_name;
+    thing_to_say = "Hi " + ((current_user && current_user.name) ? ", " + current_user.name : "") + ". Welcome to " + room_name;
   } else {
-    thing_to_say = "Come back to " + room_name + " soon";
+    thing_to_say = "Goodbye" + ((current_user && current_user.name) ? ", " + current_user.name : "") + ". Come back to " + room_name + " soon"
   }
   console.log("saying:" + thing_to_say);
   var say = childProcess.exec('echo "' + thing_to_say + '" | espeak', function (error, stdout, stderr) {
@@ -158,12 +165,14 @@ setInterval(function(){
 }, check_period);
 
 setTimeout(function(){
-  console.log("Okay, should be calibrated now.")
+  console.log("Okay, should be calibrated now.");
+  increment_vid();
 }, check_period * size_light_array);
 
 function increment_vid() {
   var options = {
-    host: 'thepaulbooth.com:3031',
+    host: 'thepaulbooth.com',
+    port: 3031,
     path: '/next/' + current_vid
   };
 
@@ -177,7 +186,7 @@ function increment_vid() {
       var server_data = JSON.parse(output);
       current_user = server_data.user;
       current_vid = server_data.vid;
-      if (user && user.name) {
+      if (current_user && current_user.name) {
         console.log("Currently logged in as " + current_user.name);
       }
     });
