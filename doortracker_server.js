@@ -226,13 +226,13 @@ app.get('/next/:vid', function(req, res) {
         if (verified_users[vid]) {
           break;
         }
-        res.send('{vid: 0}');
+        res.send(JSON.stringify({vid: 0, user: null});
         return;
       }
     }
     res.send(JSON.stringify({ user:verified_users[nvid].user, vid: nvid }));
   } else {
-    res.send('{vid: 0}');
+    res.send(JSON.stringify({vid: 0, user: null});
   }
 });
 
